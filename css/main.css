@@ -1,0 +1,29 @@
+svg .state {
+    stroke-width: 2px;
+    stroke: #D3D3D3;
+
+    -webkit-transition: stroke 0.5s, stroke-width 0.5s;
+    -o-transition: stroke 0.5s, stroke-width 0.5s;
+    transition: stroke 0.5s, stroke-width 0.5s;
+}
+svg .state:hover , .state.active {
+    cursor: pointer;
+    stroke-width: 2px;
+    stroke: #ffffff;
+}
+
+.regionlist {
+    -webkit-column-count: 5; /* Chrome, Safari, Opera */
+    -moz-column-count: 5; /* Firefox */
+    column-count: 5;
+}
+.regionlist > div {
+    display: inline-block;
+    width: 100%;
+    border-bottom: 1px solid grey;
+}
+
+.regionlist > div.active {
+    font-weight: bold;
+    background-color: lightblue;
+}
