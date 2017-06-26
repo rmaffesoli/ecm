@@ -27,3 +27,11 @@ svg .state:hover , .state.active {
     font-weight: bold;
     background-color: lightblue;
 }
+
+.red {
+  color: red;
+}
+
+.blue {
+  color: blue;
+}

@@ -26,7 +26,19 @@ angular.module('SvgMapApp')
         link: function (scope, element, attrs) {
             scope.elementId = element.attr("id");
             scope.regionClick = function () {
-                alert(scope.dummyData[scope.elementId].value);
+                alert('Population: ' + scope.dummyData[scope.elementId].population +'\n' +
+                      'Voting Population: ' + (scope.dummyData[scope.elementId].demVotes +
+                                              scope.dummyData[scope.elementId].repVotes) + '\n' +
+                      'Voting Percentage: ' + (Math.round(((scope.dummyData[scope.elementId].demVotes +
+                                              scope.dummyData[scope.elementId].repVotes) /
+                                              scope.dummyData[scope.elementId].population)*1000)/ 10) + '%\n ' +
+                      'Democrat Votes: ' + scope.dummyData[scope.elementId].demVotes +'\n ' +
+                      'Republican Votes: ' + scope.dummyData[scope.elementId].repVotes +'\n ' +
+                      'Electoral Votes: ' + (scope.dummyData[scope.elementId].demElectoralVotes +
+                                             scope.dummyData[scope.elementId].repElectoralVotes) +'\n ' +
+                      'Democrat Electoral Votes: ' + scope.dummyData[scope.elementId].demElectoralVotes +'\n ' +
+                      'Republican Electoral Votes: ' + scope.dummyData[scope.elementId].repElectoralVotes +'\n '
+                    );
             };
             scope.regionMouseOver = function () {
                 scope.hoverRegion = scope.elementId;

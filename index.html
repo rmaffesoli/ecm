@@ -11,150 +11,157 @@
 
 </head>
 <body ng-app="SvgMapApp" ng-controller="MainCtrl">
-  <div layout="column" layout-gt-sm="row">
-    <md-card flex>
+  <div layout="column" layout-gt-md="row">
+    <md-card flex="70">
       <md-toolbar layout="row" layout-align="center center">
         <h1>America the Purple Dinosaur</h1>
       </md-toolbar>
-      <md-card-content class="container">
-        <div svg-map></div>
+      <md-card-content>
         <div layout=row layout-align="space-around center">
-            <md-radio-group ng-model="settings.voteDisplay"
-                            ng-change="calcValues()"
-                            label="Vote Display">
-              <md-radio-button value=electoral
-                               class="md-primary">
-                Electoral
-              </md-radio-button>
-              <md-radio-button value=popular
-                               class="md-primary md-checked">
-                Popular
-              </md-radio-button>
-            </md-radio-group>
-          <md-radio-group ng-model="settings.ElectoralVoteDistribution"
-                          ng-change="calcValues()"
-                          label="Electoral Vote Distribution">
-            <md-radio-button value=winner-take-all
-                             class="md-primary md-checked">
-              Winner Take All
-            </md-radio-button>
-            <md-radio-button value=proportional
-                             class="md-primary">
-              Proportional
-            </md-radio-button>
-          </md-radio-group>
-          <md-radio-group ng-model="settings.ElectoralStateDistribution"
-                          ng-change="calcValues()"
-                          label="Electoral Vote Distribution">
-            <md-radio-button value=weighted
-                             class="md-primary md-checked">
-              Weighted
-            </md-radio-button>
-            <md-radio-button value=population class="md-primary">
-              Population Based
-            </md-radio-button>
-          </md-radio-group>
-          <md-radio-group ng-model="settings.year" ng-change="calcValues()">
-            <md-radio-button value='2016'>
-              2016
-            </md-radio-button>
-            <md-radio-button value='2012'>
-              2012
-            </md-radio-button>
-            <md-radio-button value='2008'>
-              2008
-            </md-radio-button>
-            <md-radio-button value='2004'>
-              2004
-            </md-radio-button>
-
-            <md-radio-button value='2000'>
-              2000
-            </md-radio-button>
-            <md-radio-button value='1996'>
-              1996
-            </md-radio-button>
-            <md-radio-button value='1992'>
-              1992
-            </md-radio-button>
-
+          <md-radio-group ng-model="settings.year" ng-change="calcValues()" layout="row">
+          <md-radio-button ng-repeat='(year,data) in dataSets'
+                            ng-value='year'>
+            {{ year }}
+          </md-radio-button>
           </md-radio-group>
         </div>
-      </md-card-content>
-    </md-card>
-    <md-card>
-      <md-toolbar layout="row" layout-align="center center">
-        <h1>Totals</h1>
-      </md-toolbar>
-      <md-card-content>
         <div layout="row" layout-align="space-between center">
           <div layout="column" layout-align="center center">
-            <h3>Population</h3>
-            <p> {{totals.population}} </p>
+            <h3>Total Pop.</h3>
+            <p> {{totals.population | number}} </p>
           </div>
           <div layout="column" layout-align="center center">
-            <h3>votes</h3>
-            <p> {{totals.votes}} </p>
+            <h3>Voting Pop.</h3>
+            <p> {{totals.votes  | number}} </p>
           </div>
           <div layout="column" layout-align="center center">
-            <h3>%</h3>
+            <h3>Participation</h3>
             <p> {{(totals.votes/totals.population)*100 | number :1}}% </p>
           </div>
           <div layout="column" layout-align="center center">
-            <h3>EV Value</h3>
-            <p>{{totals.electoralVoteValue}}</p>
+            <h3>Electoral Vote Value</h3>
+            <p>{{totals.electoralVoteValue  | number}}</p>
           </div>
         </div>
-        <h1 style="margin:auto;text-align:center;">Popular Vote</h1>
-        <div layout='row' layout-align='space-around center'>
-          <div layout='column'>
-            <p>Democrat</p>
-            <p>{{totals.demVotes}} | {{(totals.demVotes/totals.votes)*100 | number :1}}% </p>
+        <div svg-map></div>
+        <div layout=row layout-align="space-around center">
+              <md-radio-group ng-model="settings.voteDisplay"
+                              ng-change="calcValues()"
+                              label="Vote Display">
+                <md-radio-button value=electoral
+                                 class="md-primary">
+                  Electoral
+                </md-radio-button>
+                <md-radio-button value=popular
+                                 class="md-primary md-checked">
+                  Popular
+                </md-radio-button>
+              </md-radio-group>
+            <md-radio-group ng-model="settings.ElectoralVoteDistribution"
+                            ng-change="calcValues()"
+                            label="Electoral Vote Distribution">
+              <md-radio-button value=winner-take-all
+                               class="md-primary md-checked">
+                Winner Take All
+              </md-radio-button>
+              <md-radio-button value=proportional
+                               class="md-primary">
+                Proportional
+              </md-radio-button>
+            </md-radio-group>
+            <md-radio-group ng-model="settings.ElectoralStateDistribution"
+                            ng-change="calcValues()"
+                            label="Electoral Vote Distribution">
+              <md-radio-button value=weighted
+                               class="md-primary md-checked">
+                Weighted
+              </md-radio-button>
+              <md-radio-button value=population class="md-primary">
+                Population Based
+              </md-radio-button>
+            </md-radio-group>
           </div>
-          <div layout='column'>
-            <p>Republican</p>
-            <p>{{totals.repVotes}} | {{(totals.repVotes/totals.votes)*100 | number :1}}% </p></p>
-          </div>
+      </md-card-content>
+    </md-card>
+    <md-card flex="30">
+      <md-toolbar layout="row" layout-align="center center">
+        <h1>Totals</h1>
+      </md-toolbar>
+      <md-card-content layout="row" layout-gt-md="column" flex>
+        <div layout='column' layout-align='center center' flex>
+          <h1 style="margin:auto;text-align:center;">
+            Popular Vote
+          </h1>
+          <canvas id="pie"
+                  class="chart chart-pie"
+                  chart-data="totals.popData"
+                  chart-labels="labels"
+                  chart-colors="colors"
+                  flex>
+          </canvas>
+          <h2>
+             <span class="red">{{totals.popPercent[1]}}%</span> | <span class="blue">{{totals.popPercent[0]}}%</span>
+          </h2>
         </div>
-        <h1 style="margin:auto;text-align:center;">Electoral Vote</h1>
-        <div layout='row' layout-align='space-around center'>
-          <div layout='column'>
-            <p>Democrat</p>
-            <p>{{totals.demElectoralVotes}} | {{(totals.demElectoralVotes/(totals.demElectoralVotes+totals.repElectoralVotes))*100 |number :1}}%</p>
-          </div>
-          <div layout='column'>
-            <p>Republican</p>
-            <p>{{totals.repElectoralVotes}} | {{(totals.repElectoralVotes/(totals.demElectoralVotes+totals.repElectoralVotes))*100 |number :1}}%</p>
-          </div>
+        <div layout='column' layout-align='center center'>
+          <h1 style="margin:auto;text-align:center;">
+            Electoral Vote
+          </h1>
+          <canvas id="pie"
+                  class="chart chart-pie"
+                  chart-data="totals.electoralData"
+                  chart-labels="labels"
+                  chart-colors="colors"
+                  flex>
+          </canvas>
+          <h2>
+            <span class="red">{{totals.electoralPercent[1]}}%</span> | <span class="blue">{{totals.electoralPercent[0]}}%</span>
+          </h2>
+        </div>
+        <div layout='column' layout-align='center center'>
+          <h1 style="margin:auto;text-align:center;">
+            Shift
+          </h1>
+          <h2 ng-class="totals.shift.dem ? 'blue' : 'red' ">
+            +{{totals.shift.value}}%
+          </h2>
+        </div>
+        <div layout='column' layout-align='center center'>
+          <h1>Unrepresented Voters</h1>
+          <h2>{{totals.unrepresented | number}} | {{(totals.unrepresented/totals.votes)*100 | number :2}}%
+        </div>
+        <div layout='column' layout-align='center center'>
+          <h1>Represented Americans</h1>
+          <h2>{{totals.votes - totals.unrepresented | number}} | {{((totals.votes -totals.unrepresented)/totals.population)*100 | number :2}}%
         </div>
       </md-card-content>
     </md-card>
   </div>
-<md-card>
-  <md-card-content>
+  <md-card>
     <md-toolbar layout="row" layout-align="center center">
       <h1>States</h1>
     </md-toolbar>
-    <div class="regionlist">
-      <div ng-repeat="(key,region) in dummyData"
-           ng-class="{active:hoverRegion==key}">
-        <p>{{key}}<p>
-        <div layout="row" layout-align="space-between center">
-          <div layout="column">
-            <p>Republican </p>
-            <p>{{ region.repVotes}} {{(region.repVotes/(region.repVotes + region.demVotes))*100 | number :1}}%</p>
-            <p>{{ region.repElectoralVotes}} | {{(region.repElectoralVotes/(region.repElectoralVotes + region.demElectoralVotes))*100 | number :1}}%</p>
-          </div>
-          <div layout="column">
-            <p>Democrat</p>
-            <p>{{ region.demVotes}} {{(region.demVotes/(region.repVotes + region.demVotes))*100 | number :1}}%</p>
-            <p>{{ region.demElectoralVotes}} | {{(region.demElectoralVotes/(region.repElectoralVotes + region.demElectoralVotes))*100 | number :1}}%</p>
+    <md-card-content>
+      <div class="regionlist">
+        <div ng-repeat="(key,region) in dummyData"
+             ng-class="{active:hoverRegion==key}">
+          <p>{{key}}<p>
+          <div layout="row" layout-align="space-between center">
+            <div layout="column">
+              <p>Republican </p>
+              <p>{{ region.repVotes}} {{(region.repVotes/(region.repVotes + region.demVotes))*100 | number :2}}%</p>
+              <p>{{ region.repElectoralVotes}} | {{(region.repElectoralVotes/(region.repElectoralVotes + region.demElectoralVotes))*100 | number :2}}%</p>
+            </div>
+            <div layout="column">
+              <p>Democrat</p>
+              <p>{{ region.demVotes}} {{(region.demVotes/(region.repVotes + region.demVotes))*100 | number :2}}%</p>
+              <p>{{ region.demElectoralVotes}} | {{(region.demElectoralVotes/(region.repElectoralVotes + region.demElectoralVotes))*100 | number :2}}%</p>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  </md-card-content>
-</md-card>
+    </md-card-content>
+  </md-card>
 
 
 
@@ -168,7 +175,7 @@
 <script src="js/controllers.js"></script>
 <script src="js/directives.js"></script>
 <script src="js/filters.js"></script>
-<!-- <script src="node_modules/chart.js/Chart.min.js"></script> -->
-<!-- <script src="node_modules/angular-chart.js/dist/angular-chart.min.js"></script> -->
+<script src="node_modules/chart.js/dist/Chart.min.js"></script>
+<script src="node_modules/angular-chart.js/dist/angular-chart.min.js"></script>
 </body>
 </html>
