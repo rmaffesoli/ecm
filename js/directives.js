@@ -27,17 +27,37 @@ angular.module('SvgMapApp')
             scope.elementId = element.attr("id");
             scope.regionClick = function () {
                 alert('Population: ' + scope.dummyData[scope.elementId].population +'\n' +
-                      'Voting Population: ' + (scope.dummyData[scope.elementId].demVotes +
+                      'Voting Population: ' + Math.round(((scope.dummyData[scope.elementId].demVotes +
+                                                            scope.dummyData[scope.elementId].repVotes) /
+                                              scope.dummyData[scope.elementId].population)*1000)/ 10 + '% | ' +
+                                              (scope.dummyData[scope.elementId].demVotes +
                                               scope.dummyData[scope.elementId].repVotes) + '\n' +
-                      'Voting Percentage: ' + (Math.round(((scope.dummyData[scope.elementId].demVotes +
-                                              scope.dummyData[scope.elementId].repVotes) /
-                                              scope.dummyData[scope.elementId].population)*1000)/ 10) + '%\n ' +
-                      'Democrat Votes: ' + scope.dummyData[scope.elementId].demVotes +'\n ' +
-                      'Republican Votes: ' + scope.dummyData[scope.elementId].repVotes +'\n ' +
+                      'Democrat Votes: ' + Math.round((scope.dummyData[scope.elementId].demVotes /
+                                                       (scope.dummyData[scope.elementId].demVotes +
+                                                        scope.dummyData[scope.elementId].repVotes))*1000) / 10 +'% | ' +
+                                           scope.dummyData[scope.elementId].demVotes +'\n ' +
+                       'Republican Votes: ' + Math.round((scope.dummyData[scope.elementId].repVotes /
+                                                         (scope.dummyData[scope.elementId].demVotes +
+                                                         scope.dummyData[scope.elementId].repVotes))*1000) / 10 +'% | ' +
+                                            scope.dummyData[scope.elementId].repVotes +'\n\n ' +
                       'Electoral Votes: ' + (scope.dummyData[scope.elementId].demElectoralVotes +
                                              scope.dummyData[scope.elementId].repElectoralVotes) +'\n ' +
-                      'Democrat Electoral Votes: ' + scope.dummyData[scope.elementId].demElectoralVotes +'\n ' +
-                      'Republican Electoral Votes: ' + scope.dummyData[scope.elementId].repElectoralVotes +'\n '
+                      'Democrat Electoral Votes: ' + Math.round((scope.dummyData[scope.elementId].demElectoralVotes /
+                                                       (scope.dummyData[scope.elementId].demElectoralVotes +
+                                                        scope.dummyData[scope.elementId].repElectoralVotes))*1000) / 10 +'% | ' +
+                                                        scope.dummyData[scope.elementId].demElectoralVotes +'\n ' +
+                      'Republican Electoral Votes: ' + Math.round((scope.dummyData[scope.elementId].repElectoralVotes /
+                                                       (scope.dummyData[scope.elementId].demElectoralVotes +
+                                                        scope.dummyData[scope.elementId].repElectoralVotes))*1000) / 10 +'% | ' +
+                                                        scope.dummyData[scope.elementId].demElectoralVotes +'\n\n ' +
+                      'Represented Votes: ' + Math.round((scope.dummyData[scope.elementId].represented /
+                                                       (scope.dummyData[scope.elementId].demVotes +
+                                                        scope.dummyData[scope.elementId].repVotes))*1000) / 10 +'% | ' +
+                                           scope.dummyData[scope.elementId].represented +'\n ' +
+                       'Unrepresented Votes: ' + Math.round((scope.dummyData[scope.elementId].unrepresented /
+                                                        (scope.dummyData[scope.elementId].demVotes +
+                                                         scope.dummyData[scope.elementId].repVotes))*1000) / 10 +'% | ' +
+                                            scope.dummyData[scope.elementId].unrepresented +'\n '
                     );
             };
             scope.regionMouseOver = function () {

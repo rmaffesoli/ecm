@@ -2167,6 +2167,7 @@ angular.module('SvgMapApp', ['ngMaterial','chart.js'])
           }
       },
   };
+    $scope.dummyData = $scope.dataSets[$scope.settings.year];
 
     $scope.calcElectoralVoteValue = function(){
 
@@ -2178,7 +2179,14 @@ angular.module('SvgMapApp', ['ngMaterial','chart.js'])
       return Math.round(population/538);
     };
 
-    $scope.dummyData = $scope.dataSets[$scope.settings.year];
+    $scope.calcUnrepresentedVoters = function(state, electoralVotes){
+      state.votes = state.demVotes + state.repVotes;
+      return Math.round(state.votes *
+                        Math.abs((state.repVotes/state.votes) -
+                                 (state.repElectoralVotes/electoralVotes)
+                                )
+                        );
+    };
 
     $scope.calcValues = function(){
       $scope.dummyData = $scope.dataSets[$scope.settings.year];
@@ -2200,8 +2208,7 @@ angular.module('SvgMapApp', ['ngMaterial','chart.js'])
           var state = $scope.dummyData[abr];
           var electoralVotes = 0;
           $scope.totals.population += state.population;
-          $scope.totals.votes += state.demVotes;
-          $scope.totals.votes += state.repVotes;
+          $scope.totals.votes += state.demVotes + state.repVotes;
           $scope.totals.demVotes += state.demVotes;
           $scope.totals.repVotes += state.repVotes;
 
@@ -2212,40 +2219,43 @@ angular.module('SvgMapApp', ['ngMaterial','chart.js'])
           }
 
           state.value = state.repVotes / (state.demVotes + state.repVotes);
+
           if ($scope.settings.ElectoralVoteDistribution == 'winner-take-all') {
               if (state.repVotes > state.demVotes) {
                 $scope.totals.repElectoralVotes += electoralVotes;
                 state.repElectoralVotes = electoralVotes;
                 state.demElectoralVotes = 0;
-                $scope.totals.unrepresented += state.demVotes;
-                if ($scope.settings.voteDisplay=='electoral') {
-                    state.value = 1;
-                }
+                state.unrepresented = state.demVotes;
+                state.represented = state.repVotes;
               } else {
                 $scope.totals.demElectoralVotes += electoralVotes;
                 state.demElectoralVotes = electoralVotes;
                 state.repElectoralVotes = 0;
-                                $scope.totals.unrepresented += state.repVotes;
-                if ($scope.settings.voteDisplay=='electoral') {
-                    state.value = 0;
-                }
+                state.unrepresented = state.repVotes;
+                state.represented = state.demVotes;
               }
 
+              $scope.totals.unrepresented += state.unrepresented;
               if ($scope.settings.voteDisplay=='electoral') {
-                if (state.repVotes > state.demVotes) {
-                  state.value = 1;
-                } else {
-                  state.value = 0;
-                }
+                state.value = Math.round(state.value);
+              } else if ($scope.settings.voteDisplay == 'representation') {
+                state.value = state.unrepresented/(state.demVotes+ state.repVotes);
               }
+
           } else {
             state.repElectoralVotes = (Math.round(electoralVotes*state.value*10)/10);
             state.demElectoralVotes = Math.round(electoralVotes*(1-state.value)*10)/10;
             $scope.totals.repElectoralVotes += state.repElectoralVotes;
             $scope.totals.demElectoralVotes += state.demElectoralVotes;
+            state.unrepresented = $scope.calcUnrepresentedVoters(state,electoralVotes);
+            state.represented = state.votes - state.unrepresented;
+            $scope.totals.unrepresented += state.unrepresented;
             if ( $scope.settings.voteDisplay=='electoral') {
               state.value = Math.round(electoralVotes*state.value) / electoralVotes;
+            } else if ($scope.settings.voteDisplay == 'representation') {
+              state.value = state.unrepresented/(state.demVotes+ state.repVotes);
             }
+
           }
 
           $scope.totals.electoralVotes += electoralVotes;
@@ -2254,18 +2264,27 @@ angular.module('SvgMapApp', ['ngMaterial','chart.js'])
           $scope.totals.electoralData = [$scope.totals.demElectoralVotes, $scope.totals.repElectoralVotes];
 
           $scope.totals.popPercent = [Math.round(($scope.totals.demVotes/$scope.totals.votes)*10000)/100,
-                                   Math.round(($scope.totals.repVotes/$scope.totals.votes)*10000)/100];
+                                      Math.round(($scope.totals.repVotes/$scope.totals.votes)*10000)/100];
+
           $scope.totals.electoralPercent = [Math.round(($scope.totals.demElectoralVotes/$scope.totals.electoralVotes)*10000)/100,
-                                         Math.round(($scope.totals.repElectoralVotes/$scope.totals.electoralVotes)*10000)/100];
+                                            Math.round(($scope.totals.repElectoralVotes/$scope.totals.electoralVotes)*10000)/100];
 
           if ($scope.totals.popPercent[0] > $scope.totals.electoralPercent[0]){
-            $scope.totals.shift = {value:Math.round(($scope.totals.popPercent[0] - $scope.totals.electoralPercent[0])*100)/100, dem: false};
+            $scope.totals.shift = {value: Math.round(($scope.totals.popPercent[0] -
+                                          $scope.totals.electoralPercent[0])*100)/100,
+                                   dem: false
+                                  };
           } else {
-            $scope.totals.shift = {value:Math.round(($scope.totals.popPercent[1] - $scope.totals.electoralPercent[1])*100)/100, dem: true};
+            $scope.totals.shift = {value: Math.round(($scope.totals.popPercent[1] -
+                                          $scope.totals.electoralPercent[1])*100)/100,
+                                   dem: true
+                                  };
           }
       }
     };
+
     $scope.calcValues();
+
 }])
 .controller('stateDetailCtrl', ['$scope', 'mdDialog', function ($scope, mdDialog) {
 
