@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Electoral Fuckery</title>
+    <title>Electoral Issues</title>
     <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/angular_material/1.1.0/angular-material.min.css">
     <link rel="stylesheet" href="css/bootstrap.min.css"/>
     <link rel="stylesheet" href="css/main.css"/>
@@ -22,7 +22,8 @@
           <md-input-container flex>
             <md-select ng-model="settings.year"
                        ng-change="calcValues()"
-                       layout="row">
+                       layout="row"
+                       aria-label="Election Year">
               <md-option ng-repeat='(year,data) in dataSets'
                          ng-value='year'>
                 {{ year }}
@@ -32,7 +33,8 @@
           <md-input-container flex>
             <md-select ng-model="settings.voteDisplay"
                        ng-change="calcValues()"
-                       label="Vote Display">
+                       label="Vote Display"
+                       aria-label="Map Display">
               <md-option value=electoral
                          class="md-primary">
                 Electoral
@@ -51,7 +53,8 @@
             <md-select ng-model="settings.ElectoralVoteDistribution"
                        ng-change="calcValues()"
                        label="Electoral Vote Distribution"
-                       ng-disabled="settings.voteDisplay == 'popular'">
+                       ng-disabled="settings.voteDisplay == 'popular'"
+                       aria-label="Electoral Vote Distribution">
               <md-option value=winner-take-all
                          class="md-primary md-checked">
                 Winner Take All
@@ -66,7 +69,8 @@
             <md-select ng-model="settings.ElectoralStateDistribution"
                        ng-change="calcValues()"
                        label="Electoral Vote Distribution"
-                       ng-disabled="settings.voteDisplay == 'popular'">
+                       ng-disabled="settings.voteDisplay == 'popular'"
+                       aria-label="Electoral State Distribution">
               <md-option value=weighted
                          class="md-primary md-checked">
                 Weighted
@@ -84,57 +88,94 @@
       <md-toolbar layout="row" layout-align="center center">
         <h1>Totals</h1>
       </md-toolbar>
-      <md-card-content layout="column" layout-align="center center">
-        <h3>Total Pop.</h3>
-        <p> {{totals.population | number}} </p>
-        <h3>Voting Pop.</h3>
-        <p> {{totals.votes  | number}} </p>
-        <h3>Participation</h3>
-        <p> {{(totals.votes/totals.population)*100 | number :1}}% </p>
-        <h3>Electoral Vote Value</h3>
-        <p>{{totals.electoralVoteValue  | number}}</p>
-        <h3>
-          Popular Vote
-        </h3>
-        <canvas id="pie"
-                class="chart chart-pie"
-                chart-data="totals.popData"
-                chart-labels="labels"
-                chart-colors="colors"
-                >
-        </canvas>
-        <p>
-           <span class="red">{{totals.popPercent[1]}}%</span> | <span class="blue">{{totals.popPercent[0]}}%</span>
-        </p>
-        <h3>
-          Electoral Vote
-        </h3>
-        <canvas id="pie"
-                class="chart chart-pie"
-                chart-data="totals.electoralData"
-                chart-labels="labels"
-                chart-colors="colors"
-                >
-        </canvas>
-        <p>
-          <span class="red">{{totals.electoralPercent[1]}}%</span> | <span class="blue">{{totals.electoralPercent[0]}}%</span>
-        </p>
-        <h3>
-          Shift
-        </h3>
-        <p ng-class="totals.shift.dem ? 'blue' : 'red' ">
-          +{{totals.shift.value}}% | {{totals.shift.value * 5.38 | number :1}} EV
-        </p>
-        <h3>Unrepresented Voters</h3>
-        <p>{{totals.unrepresented | number}} | {{(totals.unrepresented/totals.votes)*100 | number :2}}%</p>
-        <h3>Represented Voters</h3>
-        <p>{{totals.votes - totals.unrepresented | number}} | {{((totals.votes - totals.unrepresented)/totals.votes)*100 | number :2}}%</p>
+      <md-card-content layout="column" layout-align="space-around space-around">
+        <div layout="row" layout-align="space-around" flex>
+          <div layout="column" layout-align="center center">
+            <h3>Population</h3>
+            <p> {{totals.population | number}} </p>
+          </div>
+          <div layout="column" layout-align="center center">
+            <h3>Votes</h3>
+            <p> {{totals.votes  | number}} | {{(totals.votes/totals.population)*100 | number :1}}% </p>
+          </div>
+        </div>
+        <div layout="row" layout-align="space-around">
+          <div layout="column" layout-align="center center">
+            <h3>
+              Popular Vote
+            </h3>
+            <canvas id="pie"
+                    class="chart chart-pie"
+                    chart-data="totals.popData"
+                    chart-labels="labels"
+                    chart-colors="colors">
+            </canvas>
+            <p>
+               <span class="red">{{totals.popPercent[1]}}%</span> | <span class="blue">{{totals.popPercent[0]}}%</span>
+            </p>
+          </div>
+          <div layout="column" layout-align="center center">
+            <h3>
+              Electoral Vote
+            </h3>
+            <canvas id="pie"
+                    class="chart chart-pie"
+                    chart-data="totals.electoralData"
+                    chart-labels="labels"
+                    chart-colors="colors">
+            </canvas>
+            <p>
+              <span class="red">{{totals.electoralPercent[1]}}%</span> | <span class="blue">{{totals.electoralPercent[0]}}%</span>
+            </p>
+          </div>
+        </div>
+        <div layout="row" layout-align="space-around">
+          <div layout="column" layout-align="center center">
+            <h3>
+              Shift
+            </h3>
+            <p ng-class="totals.shift.dem ? 'blue' : 'red' ">
+              +{{totals.shift.value}}% | {{totals.shift.value * 5.38 | number :1}} EV
+            </p>
+          </div>
+          <div layout="column" layout-align="center center">
+            <h3>EV Value</h3>
+            <p>{{totals.electoralVoteValue  | number}}</p>
+          </div>
+        </div>
+        <div layout="row" layout-align="space-around">
+          <div layout="column" layout-align="center center">
+            <h3>Voter Rep</h3>
+            <canvas id="pie"
+                    class="chart chart-pie"
+                    chart-data="totals.representationData"
+                    chart-labels="representedLabels"
+                    chart-colors="colors">
+            </canvas>
+            <p>{{totals.represented | number}} | {{(totals.represented/totals.votes)*100 | number :2}}%</p>
+          </div>
+          <div layout="row" layout-align="space-around">
+            <div layout="column" layout-align="center center">
+              <h3>Unearned EVs</h3>
+              <canvas id="pie"
+                      class="chart chart-pie"
+                      chart-data="totals.earnedData"
+                      chart-labels="earnedLabels"
+                      chart-colors="colors">
+              </canvas>
+              <p class="red" >{{totals.unearnedEVs | number}} | {{(totals.unearnedEVs/538)*100 | number :2}}%</p>
+              <p>
+                <span class="blue">
+                  {{totals.unearnedDem | number}}
+                </span> | <span class="red">
+                  {{totals.unearnedRep | number }}
+                </span>
+              </p>
+            </div>
+        </div>
       </md-card-content>
     </md-card>
   </div>
-
-
-
 
 <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular.min.js"></script>
 <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-animate.min.js"></script>

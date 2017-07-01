@@ -9,6 +9,8 @@ angular.module('SvgMapApp', ['ngMaterial','chart.js'])
     };
     $scope.colors = ['#0000FF','#FF0000'];
     $scope.labels = ["Democrat", "Republican"];
+    $scope.representedLabels = ["Represented", "Unepresented"];
+    $scope.earnedLabels = ["Earned", "Unearned"];
     $scope.dataSets = {
       '2016' : {
         "AL":{
@@ -2201,7 +2203,10 @@ angular.module('SvgMapApp', ['ngMaterial','chart.js'])
                       electoralVoteValue: $scope.calcElectoralVoteValue(),
                       popData: [1,1],
                       electoralData: [1,1],
-                      unrepresented: 0
+                      unrepresented: 0,
+                      unearnedEVs: 0,
+                      unearnedDem: 0,
+                      unearnedRep: 0
                     };
 
       for (var abr in $scope.dummyData) {
@@ -2234,7 +2239,11 @@ angular.module('SvgMapApp', ['ngMaterial','chart.js'])
                 state.unrepresented = state.repVotes;
                 state.represented = state.demVotes;
               }
-
+              state.unearnedRep = state.repElectoralVotes - (state.value * state.repElectoralVotes);
+              state.unearnedDem = state.demElectoralVotes - (state.value * state.demElectoralVotes);
+              $scope.totals.unearnedRep += state.unearnedRep;
+              $scope.totals.unearnedDem += state.demElectoralVotes - ((1 - state.value) * state.demElectoralVotes);
+              $scope.totals.unearnedEVs += (state.unearnedRep + state.unearnedDem);
               $scope.totals.unrepresented += state.unrepresented;
               if ($scope.settings.voteDisplay=='electoral') {
                 state.value = Math.round(state.value);
@@ -2247,6 +2256,11 @@ angular.module('SvgMapApp', ['ngMaterial','chart.js'])
             state.demElectoralVotes = Math.round(electoralVotes*(1-state.value)*10)/10;
             $scope.totals.repElectoralVotes += state.repElectoralVotes;
             $scope.totals.demElectoralVotes += state.demElectoralVotes;
+            state.unearnedRep = state.repElectoralVotes - (state.value * state.repElectoralVotes);
+            state.unearnedDem = state.demElectoralVotes - (state.value * state.demElectoralVotes);
+            $scope.totals.unearnedRep += state.unearnedRep;
+            $scope.totals.unearnedDem += state.demElectoralVotes - ((1 - state.value) * state.demElectoralVotes);
+            $scope.totals.unearnedEVs += (state.unearnedRep + state.unearnedDem);
             state.unrepresented = $scope.calcUnrepresentedVoters(state,electoralVotes);
             state.represented = state.votes - state.unrepresented;
             $scope.totals.unrepresented += state.unrepresented;
@@ -2258,16 +2272,26 @@ angular.module('SvgMapApp', ['ngMaterial','chart.js'])
 
           }
 
+          $scope.totals.represented = $scope.totals.votes - $scope.totals.unrepresented;
           $scope.totals.electoralVotes += electoralVotes;
 
           $scope.totals.popData = [$scope.totals.demVotes, $scope.totals.repVotes];
           $scope.totals.electoralData = [$scope.totals.demElectoralVotes, $scope.totals.repElectoralVotes];
+          $scope.totals.representationData = [$scope.totals.represented, $scope.totals.unrepresented];
+          $scope.totals.earnedData = [Math.round(538 - $scope.totals.unearnedEVs),
+                                      Math.round($scope.totals.unearnedEVs)];
+
+          $scope.totals.representationPercent = [Math.round(($scope.totals.represented/$scope.totals.votes)*10000)/100,
+                                                 Math.round(($scope.totals.unrepresented/$scope.totals.votes)*10000)/100];
 
           $scope.totals.popPercent = [Math.round(($scope.totals.demVotes/$scope.totals.votes)*10000)/100,
                                       Math.round(($scope.totals.repVotes/$scope.totals.votes)*10000)/100];
 
           $scope.totals.electoralPercent = [Math.round(($scope.totals.demElectoralVotes/$scope.totals.electoralVotes)*10000)/100,
                                             Math.round(($scope.totals.repElectoralVotes/$scope.totals.electoralVotes)*10000)/100];
+
+          $scope.totals.earnedPercent = [Math.round((538 - $scope.totals.unearnedEVs)*10000)/100,
+                                            Math.round(($scope.totals.unearnedEVs)*10000)/100];
 
           if ($scope.totals.popPercent[0] > $scope.totals.electoralPercent[0]){
             $scope.totals.shift = {value: Math.round(($scope.totals.popPercent[0] -
