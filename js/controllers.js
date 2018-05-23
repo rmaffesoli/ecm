@@ -2239,11 +2239,19 @@ angular.module('SvgMapApp', ['ngMaterial','chart.js'])
                 state.unrepresented = state.repVotes;
                 state.represented = state.demVotes;
               }
-              state.unearnedRep = state.repElectoralVotes - (state.value * state.repElectoralVotes);
-              state.unearnedDem = state.demElectoralVotes - (state.value * state.demElectoralVotes);
+
+              state.unearnedRep = state.repElectoralVotes - (state.value * state.electoralVotes);
+              state.unearnedDem = state.demElectoralVotes - ((1 - state.value) * state.electoralVotes);
+              if (state.unearnedDem < 0) {
+                state.unearnedDem = 0;
+              } else if (state.unearnedRep < 0) {
+                state.unearnedRep = 0;
+              }
               $scope.totals.unearnedRep += state.unearnedRep;
-              $scope.totals.unearnedDem += state.demElectoralVotes - ((1 - state.value) * state.demElectoralVotes);
-              $scope.totals.unearnedEVs += (state.unearnedRep + state.unearnedDem);
+              $scope.totals.unearnedDem += state.unearnedDem;
+              $scope.totals.unearnedEVs += state.unearnedRep;
+              $scope.totals.unearnedEVs += state.unearnedDem;
+
               $scope.totals.unrepresented += state.unrepresented;
               if ($scope.settings.voteDisplay=='electoral') {
                 state.value = Math.round(state.value);
@@ -2256,11 +2264,19 @@ angular.module('SvgMapApp', ['ngMaterial','chart.js'])
             state.demElectoralVotes = Math.round(electoralVotes*(1-state.value)*10)/10;
             $scope.totals.repElectoralVotes += state.repElectoralVotes;
             $scope.totals.demElectoralVotes += state.demElectoralVotes;
-            state.unearnedRep = state.repElectoralVotes - (state.value * state.repElectoralVotes);
-            state.unearnedDem = state.demElectoralVotes - (state.value * state.demElectoralVotes);
+
+            state.unearnedRep = state.repElectoralVotes - (state.value * state.electoralVotes);
+            state.unearnedDem = state.demElectoralVotes - ((1 - state.value) * state.electoralVotes);
+            if (state.unearnedDem < 0) {
+              state.unearnedDem = 0;
+            } else if (state.unearnedRep < 0) {
+              state.unearnedRep = 0;
+            }
             $scope.totals.unearnedRep += state.unearnedRep;
-            $scope.totals.unearnedDem += state.demElectoralVotes - ((1 - state.value) * state.demElectoralVotes);
-            $scope.totals.unearnedEVs += (state.unearnedRep + state.unearnedDem);
+            $scope.totals.unearnedDem += state.unearnedDem;
+            $scope.totals.unearnedEVs += state.unearnedRep;
+            $scope.totals.unearnedEVs += state.unearnedDem;
+
             state.unrepresented = $scope.calcUnrepresentedVoters(state,electoralVotes);
             state.represented = state.votes - state.unrepresented;
             $scope.totals.unrepresented += state.unrepresented;
@@ -2278,6 +2294,7 @@ angular.module('SvgMapApp', ['ngMaterial','chart.js'])
           $scope.totals.popData = [$scope.totals.demVotes, $scope.totals.repVotes];
           $scope.totals.electoralData = [$scope.totals.demElectoralVotes, $scope.totals.repElectoralVotes];
           $scope.totals.representationData = [$scope.totals.represented, $scope.totals.unrepresented];
+
           $scope.totals.earnedData = [Math.round(538 - $scope.totals.unearnedEVs),
                                       Math.round($scope.totals.unearnedEVs)];
 
